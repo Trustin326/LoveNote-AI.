@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoveNote AI — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --hot:#ff1493;
+  --hot2:#ff4dc4;
+  --ink:#111;
+  --muted:#666;
+  --bg:#ffffff;
+  --soft:#fff0fb;
+  --card:#ffffff;
+  --shadow:0 18px 45px rgba(0,0,0,.14);
+  --radius:22px;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Poppins',system-ui,Segoe UI,Arial;background:var(--bg);color:var(--ink);}
+a{color:inherit;text-decoration:none}
+.container{max-width:1120px;margin:0 auto;padding:18px}
+.btn{border:none;cursor:pointer;border-radius:14px;padding:12px 16px;font-weight:800}
+.btnHot{background:linear-gradient(90deg,var(--hot),var(--hot2));color:#fff}
+.btnGhost{background:#fff;border:1px solid rgba(0,0,0,.12)}
+.btnDark{background:#111;color:#fff}
+.pill{display:inline-flex;gap:8px;align-items:center;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.08)}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.06);}
+.grid{display:grid;gap:16px}
+.grid2{grid-template-columns:1.1fr .9fr}
+@media(max-width:980px){.grid2{grid-template-columns:1fr}}
+.heroBand{background:linear-gradient(180deg,#ff00a8,#ff4dc4,#ff87d8);color:#fff}
+.titleGlow{font-size:64px;line-height:1;font-weight:900;letter-spacing:.4px}
+.sub{opacity:.92;font-size:18px}
+small{color:var(--muted)}
+hr{border:none;border-top:1px solid rgba(0,0,0,.08);margin:16px 0}
+input,textarea,select{
+  width:100%;padding:12px 12px;border-radius:14px;border:1px solid rgba(0,0,0,.14);
+  font-family:inherit;font-size:14px;background:#fff;
+}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.kbd{font-size:12px;padding:4px 8px;border-radius:10px;background:rgba(0,0,0,.06)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:rgba(255,20,147,.12);color:#b00062;font-weight:800}
+.lock{opacity:.55;filter:grayscale(1)}
+.modalBackdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50}
+.modal{width:min(560px,92vw);background:#fff;border-radius:22px;box-shadow:0 28px 80px rgba(0,0,0,.35);padding:18px}
+.table{width:100%;border-collapse:separate;border-spacing:0 10px}
+.table td{padding:12px 10px;background:#fff;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+.table tr td:first-child{border-left:1px solid rgba(0,0,0,.06);border-top-left-radius:14px;border-bottom-left-radius:14px}
+.table tr td:last-child{border-right:1px solid rgba(0,0,0,.06);border-top-right-radius:14px;border-bottom-right-radius:14px}
+</style>
+</head>
+<body>
+
+<header class="heroBand">
+  <div class="container row" style="justify-content:space-between">
+    <div class="row">
+      <div class="pill">💘 <b>LoveNote AI</b> <span class="kbd">Dashboard</span></div>
+      <div id="planPill" class="pill">Plan: ...</div>
+    </div>
+    <div class="row">
+      <button class="btn btnGhost" onclick="location.href='index.html'">Landing</button>
+      <button class="btn btnGhost" onclick="openAdmin()">Admin</button>
+      <button class="btn btnHot" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="grid grid2" style="margin-top:12px">
+    <div class="card" style="padding:16px">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h2 style="margin:0;color:#b00062">Create</h2>
+          <small id="userLine">Checking session...</small>
+        </div>
+        <div class="row">
+          <span class="badge" id="roleBadge">role: user</span>
+          <span class="badge" id="planBadge">plan: free</span>
+        </div>
+      </div>
+      <hr/>
+      <div class="row" style="margin-bottom:10px">
+        <button class="btn btnHot" onclick="showTool('message')">💬 Message</button>
+        <button class="btn btnGhost" id="btnMeme" onclick="showTool('meme')">😂 Meme</button>
+        <button class="btn btnGhost" id="btnCard" onclick="showTool('card')">🎁 Card</button>
+        <button class="btn btnGhost" id="btnPhoto" onclick="showTool('photo')">📸 Photo</button>
+      </div>
+
+      <div id="toolBox" class="card" style="padding:14px;background:var(--soft)">
+        <!-- tool renders here -->
+      </div>
+    </div>
+
+    <div class="card" style="padding:16px">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0;color:#b00062">History</h2>
+        <button class="btn btnGhost" onclick="refresh()">Refresh</button>
+      </div>
+      <small>Your saved creations (messages/memes/cards/photos) show here.</small>
+      <div id="history" style="margin-top:12px"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+/** CONFIG — paste your Supabase keys */
+const CONFIG = {
+  SUPABASE_URL: "YOUR_SUPABASE_URL",
+  SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_KEY",
+};
+const supabase = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+let sessionUser = null;
+let profile = null;
+
+const PLAN_ORDER = ["free","bundle","pro"];
+function hasPlan(required){
+  if(!profile) return false;
+  return PLAN_ORDER.indexOf(profile.plan) >= PLAN_ORDER.indexOf(required);
+}
+
+function lockButton(btnId, locked){
+  const b = document.getElementById(btnId);
+  if(!b) return;
+  if(locked){
+    b.classList.add('lock');
+    b.title = "Upgrade required";
+  } else {
+    b.classList.remove('lock');
+    b.title = "";
+  }
+}
+
+function toolTemplate(feature){
+  const commonShare = `
+    <div class="row" style="margin-top:10px">
+      <button class="btn btnHot" onclick="sendTo('sms')">Send to Phone (SMS)</button>
+      <button class="btn btnGhost" onclick="sendTo('social')">Share Link</button>
+    </div>
+    <small>SMS uses your phone's default app. Social share copies a link placeholder (Phase 2).</small>
+  `;
+
+  if(feature === 'message') return `
+    <div class="badge">💬 AI Love Message</div>
+    <input id="title" placeholder="Title (optional)"/>
+    <textarea id="content" placeholder="Write what you want... (e.g., funny, breakup, engaged, side-chick mode)"></textarea>
+    <input id="file" type="file" accept="image/*"/>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btnDark" onclick="generateMessage()">Generate</button>
+      <button class="btn btnHot" onclick="saveCreation('message')">Save</button>
+    </div>
+    ${commonShare}
+  `;
+
+  if(feature === 'meme') return `
+    <div class="badge">😂 Meme Generator</div>
+    <input id="title" placeholder="Meme title"/>
+    <input id="top" placeholder="Top text"/>
+    <input id="bottom" placeholder="Bottom text"/>
+    <input id="file" type="file" accept="image/*"/>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btnHot" onclick="saveCreation('meme')">Save Meme</button>
+    </div>
+    ${commonShare}
+  `;
+
+  if(feature === 'card') return `
+    <div class="badge">🎁 Greeting Card</div>
+    <input id="title" placeholder="Card title"/>
+    <textarea id="content" placeholder="Write the inside message..."></textarea>
+    <input id="file" type="file" accept="image/*"/>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btnDark" onclick="previewCard()">Preview</button>
+      <button class="btn btnHot" onclick="saveCreation('card')">Save Card</button>
+    </div>
+    <div id="preview" class="card" style="padding:12px;margin-top:12px;display:none"></div>
+    ${commonShare}
+  `;
+
+  if(feature === 'photo') return `
+    <div class="badge">📸 Photo Transform (Demo)</div>
+    <small>Phase 2 demo: adds Valentine overlay + hearts. Full AI transform = Phase 3/4.</small>
+    <input id="title" placeholder="Photo title"/>
+    <input id="file" type="file" accept="image/*"/>
+    <div class="row" style="margin-top:10px">
+      <button class="btn btnDark" onclick="previewPhoto()">Preview</button>
+      <button class="btn btnHot" onclick="saveCreation('photo')">Save</button>
+    </div>
+    <div id="preview" class="card" style="padding:12px;margin-top:12px;display:none"></div>
+    ${commonShare}
+  `;
+
+  return `<div>Pick a tool.</div>`;
+}
+
+function showTool(feature){
+  // Feature locking
+  if(feature === 'meme' && !hasPlan('bundle')){ alert("Upgrade to Bundle to unlock Memes."); return; }
+  if(feature === 'card' && !hasPlan('bundle')){ alert("Upgrade to Bundle to unlock Cards."); return; }
+  if(feature === 'photo' && !hasPlan('pro')){ alert("Upgrade to Pro to unlock Photo Transform."); return; }
+
+  document.getElementById('toolBox').innerHTML = toolTemplate(feature);
+  window.location.hash = feature;
+}
+
+async function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    if(!file) return resolve("");
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function generateMessage(){
+  const t = document.getElementById('content').value.trim();
+  if(!t){ alert("Type what you want first."); return; }
+  // Simple "AI-style" templates Phase 2 (offline). Replace with real AI later.
+  const starters = [
+    "Okay so boom…",
+    "Listen 😂",
+    "Respectfully…",
+    "I had to come correct…",
+    "I’m not saying I’m Cupid but…"
+  ];
+  const closer = [
+    "— sent with love 💘",
+    "— don’t play with me 😌💗",
+    "— be mine or be blocked 😭",
+    "— Valentine vibes only 💞"
+  ];
+  const out = `${starters[Math.floor(Math.random()*starters.length)]} ${t} ${closer[Math.floor(Math.random()*closer.length)]}`;
+  document.getElementById('content').value = out;
+}
+
+function previewCard(){
+  const msg = document.getElementById('content').value.trim() || "(empty)";
+  const box = document.getElementById('preview');
+  box.style.display='block';
+  box.innerHTML = `
+    <div class="row" style="justify-content:space-between">
+      <div class="badge">💃 Dancer Card Preview</div>
+      <div class="pill">Click save to store</div>
+    </div>
+    <h3 style="margin:10px 0;color:#b00062">${escapeHtml(msg)}</h3>
+    <div style="font-size:56px">💃</div>
+  `;
+}
+
+async function previewPhoto(){
+  const file = document.getElementById('file').files[0];
+  if(!file){ alert("Upload an image first."); return; }
+  const data = await fileToDataURL(file);
+  const box = document.getElementById('preview');
+  box.style.display='block';
+  box.innerHTML = `
+    <div class="row" style="justify-content:space-between">
+      <div class="badge">💘 Valentine Overlay Preview</div>
+      <div class="pill">Demo</div>
+    </div>
+    <div style="position:relative;margin-top:10px">
+      <img src="${data}" style="width:100%;border-radius:18px"/>
+      <div style="position:absolute;inset:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:10px;pointer-events:none">
+        <div class="pill">💖💖💖</div>
+      </div>
+    </div>
+  `;
+}
+
+async function saveCreation(feature){
+  const title = (document.getElementById('title')?.value || "").trim();
+  let content = (document.getElementById('content')?.value || "").trim();
+  if(feature === 'meme'){
+    const top = (document.getElementById('top')?.value || "").trim();
+    const bottom = (document.getElementById('bottom')?.value || "").trim();
+    content = `TOP: ${top}\nBOTTOM: ${bottom}`;
+  }
+  const file = document.getElementById('file')?.files?.[0];
+  const image_data = await fileToDataURL(file);
+
+  const { data, error } = await supabase.from('creations').insert([{
+    user_id: sessionUser.id,
+    feature,
+    title,
+    content,
+    image_data
+  }]).select().single();
+
+  if(error){ alert(error.message); return; }
+  alert("Saved ✅");
+  await loadHistory();
+}
+
+function sendTo(kind){
+  const text = (document.getElementById('content')?.value || "").trim() || "LoveNote AI 💘";
+  const url = location.origin + location.pathname.replace('dashboard.html','index.html');
+  if(kind === 'sms'){
+    // Opens phone SMS app (mobile)
+    window.location.href = `sms:?&body=${encodeURIComponent(text + " " + url)}`;
+  } else {
+    navigator.clipboard?.writeText(text + " " + url);
+    alert("Share text copied ✅ (Paste to social)");
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+async function loadHistory(){
+  const { data, error } = await supabase
+    .from('creations')
+    .select('id,created_at,feature,title,content,image_data')
+    .order('created_at',{ascending:false})
+    .limit(30);
+
+  if(error){
+    document.getElementById('history').innerHTML = `<small style="color:#b00062">Failed to load history: ${escapeHtml(error.message)}</small>`;
+    return;
+  }
+  if(!data || data.length===0){
+    document.getElementById('history').innerHTML = `<small>No saved items yet. Create something 👇</small>`;
+    return;
+  }
+  document.getElementById('history').innerHTML = data.map(item => `
+    <div class="card" style="padding:12px;margin-bottom:10px">
+      <div class="row" style="justify-content:space-between">
+        <div class="badge">${iconFor(item.feature)} ${item.feature.toUpperCase()}</div>
+        <small>${new Date(item.created_at).toLocaleString()}</small>
+      </div>
+      <b>${escapeHtml(item.title || '(untitled)')}</b>
+      <div style="white-space:pre-wrap;color:#444;margin-top:6px">${escapeHtml(item.content || '')}</div>
+      ${item.image_data ? `<img src="${item.image_data}" style="width:100%;border-radius:16px;margin-top:10px"/>` : ``}
+    </div>
+  `).join('');
+}
+
+function iconFor(feature){
+  return ({message:'💬',meme:'😂',card:'🎁',photo:'📸'}[feature] || '✨');
+}
+
+async function bootstrap(){
+  const { data: s } = await supabase.auth.getSession();
+  sessionUser = s?.session?.user || null;
+  if(!sessionUser){
+    // no auto-login: require login
+    alert("Please login to continue.");
+    location.href = "index.html";
+    return;
+  }
+
+  document.getElementById('userLine').textContent = `Logged in as ${sessionUser.email}`;
+
+  const { data: prof, error } = await supabase
+    .from('profiles')
+    .select('user_id,email,role,plan')
+    .eq('user_id', sessionUser.id)
+    .maybeSingle();
+
+  if(error){
+    alert("Profile load error: " + error.message);
+    return;
+  }
+  profile = prof || { role:'user', plan:'free' };
+
+  document.getElementById('roleBadge').textContent = `role: ${profile.role}`;
+  document.getElementById('planBadge').textContent = `plan: ${profile.plan}`;
+  document.getElementById('planPill').textContent = `Plan: ${profile.plan}`;
+
+  lockButton('btnMeme', !hasPlan('bundle'));
+  lockButton('btnCard', !hasPlan('bundle'));
+  lockButton('btnPhoto', !hasPlan('pro'));
+
+  // Hash routing
+  const hash = (location.hash || '#message').replace('#','');
+  showTool(hash);
+
+  await loadHistory();
+}
+
+async function logout(){
+  await supabase.auth.signOut();
+  location.href='index.html';
+}
+function refresh(){ loadHistory(); }
+async function openAdmin(){
+  // quick role check
+  if(profile?.role !== 'owner'){ alert("Owner only. Set your role to owner in Supabase."); return; }
+  location.href='admin.html';
+}
+
+bootstrap();
+</script>
+</body></html>
