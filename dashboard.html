@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LoveNote AI Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --pink-start:#ff2f92;
+  --pink-end:#ff72c4;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,'Poppins',sans-serif;
+  background:#ffffff;
+}
+
+/* WRAPPER + TITLE */
+.wrapper {
+  max-width:1100px;
+  margin:0 auto;
+  padding:20px 14px 40px;
+}
+.dashboard-title {
+  text-align:center;
+  font-size:30px;
+  font-weight:800;
+  color:var(--pink-start);
+  margin:10px 0 26px;
+}
+
+/* GRID LIKE YOUR SECOND IMAGE */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:20px;
+}
+
+/* CARD STYLE (VALENTINE GLASS) */
+.card {
+  background:linear-gradient(145deg,#ffeef9,#ffffff);
+  border-radius:26px;
+  padding:18px 18px 20px;
+  box-shadow:0 16px 40px rgba(255,0,150,.16);
+  border:2px solid rgba(255,150,210,.45);
+}
+.card-header {
+  font-size:16px;
+  font-weight:800;
+  color:var(--pink-start);
+  text-align:left;
+  margin-bottom:10px;
+}
+.badge-star {
+  color:var(--pink-end);
+}
+
+/* CHARACTER ART (1 QUADRANT EACH) */
+.card-art {
+  width:100%;
+  height:120px;
+  border-radius:22px;
+  margin-bottom:12px;
+  background-image:url("data:image/jpeg;base64,{{BASE64_4_CHARACTER_IMAGE}}");
+  background-size:200% 200%;
+  background-repeat:no-repeat;
+  background-position:center;
+}
+.art1 { background-position:left top; }
+.art2 { background-position:right top; }
+.art3 { background-position:left bottom; }
+.art4 { background-position:right bottom; }
+
+/* FIELDS / BUTTONS */
+.field-label {
+  font-size:12px;
+  font-weight:600;
+  color:#ff2f92;
+  margin-bottom:4px;
+}
+.input, .select, .textarea, .file-input {
+  width:100%;
+  border-radius:14px;
+  border:1px solid #ffd3ea;
+  padding:9px 11px;
+  font-size:13px;
+  margin-bottom:8px;
+  background:#ffffff;
+}
+.textarea { resize:vertical; min-height:60px; }
+.file-input { padding:7px 11px; }
+
+.btn-primary {
+  width:100%;
+  border:none;
+  border-radius:18px;
+  padding:11px 0;
+  margin-top:6px;
+  font-size:14px;
+  font-weight:700;
+  color:#ffffff;
+  background:linear-gradient(90deg,var(--pink-start),var(--pink-end));
+  box-shadow:0 10px 20px rgba(255,0,140,.32);
+  cursor:pointer;
+}
+.btn-secondary {
+  margin-top:5px;
+  border:none;
+  border-radius:18px;
+  padding:10px 0;
+  font-size:13px;
+  font-weight:600;
+  color:#ffffff;
+  background:linear-gradient(90deg,#ff9ad8,#ffc3ec);
+  cursor:pointer;
+}
+
+/* PREVIEWS */
+.preview {
+  margin-top:4px;
+  font-size:11px;
+  color:#c96ba5;
+}
+.preview canvas,
+.preview img {
+  width:100%;
+  border-radius:12px;
+}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="dashboard-title">LoveNote AI Dashboard</div>
+
+  <div class="grid">
+    <!-- CARD 1: MESSAGE -->
+    <div class="card">
+      <div class="card-header"><span class="badge-star">*</span>AI Message Generator</div>
+      <div class="card-art art1"></div>
+
+      <div class="field-label">Recipient Name</div>
+      <input class="input" id="msgName" placeholder="Emma" />
+
+      <div class="field-label">Type of Message</div>
+      <select class="select" id="msgTone">
+        <option>Romantic</option>
+        <option>Cute</option>
+        <option>Funny</option>
+      </select>
+
+      <div class="field-label">Upload Image</div>
+      <input class="file-input" type="file" id="msgUpload" />
+      <div class="preview" id="msgPreview">Preview appears here after upload.</div>
+
+      <button class="btn-primary" onclick="sendMsg()">Send Message</button>
+    </div>
+
+    <!-- CARD 2: MEME -->
+    <div class="card">
+      <div class="card-header">Meme Creator<span class="badge-star">*</span></div>
+      <div class="card-art art2"></div>
+
+      <div class="field-label">Upload Photo</div>
+      <input class="file-input" type="file" id="memeUpload" />
+
+      <div class="field-label">Top Text</div>
+      <input class="input" id="topText" placeholder="When you find your paw-fect match..." />
+
+      <div class="field-label">Bottom Text</div>
+      <input class="input" id="bottomText" placeholder="Bottom caption..." />
+
+      <div class="preview"><canvas id="memeCanvas"></canvas></div>
+
+      <button class="btn-primary" onclick="generateMeme()">Generate Meme</button>
+      <button class="btn-secondary" onclick="alert('Meme Sent!')">Send Meme</button>
+    </div>
+
+    <!-- CARD 3: GREETING CARD -->
+    <div class="card">
+      <div class="card-header"><span class="badge-star">*</span>Greeting Card Builder</div>
+      <div class="card-art art3"></div>
+
+      <div class="field-label">Recipient's Name</div>
+      <input class="input" id="cardName" placeholder="Jessie" />
+
+      <div class="field-label">Card Message</div>
+      <textarea class="textarea" id="cardMessage" placeholder="You make my heart skip a beat! ❤️"></textarea>
+
+      <div class="field-label">Upload Image</div>
+      <input class="file-input" type="file" id="cardUpload" />
+      <div class="preview" id="cardPreview">Card preview appears here.</div>
+
+      <button class="btn-primary" onclick="alert('Card Created!')">Create Card</button>
+      <button class="btn-secondary" onclick="alert('Card Sent!')">Send Card</button>
+    </div>
+
+    <!-- CARD 4: PHOTO TRANSFORM -->
+    <div class="card">
+      <div class="card-header"><span class="badge-star">*</span>Photo Transform</div>
+      <div class="card-art art4"></div>
+
+      <div class="field-label">Upload Photo</div>
+      <input class="file-input" type="file" id="photoUpload" />
+
+      <div class="field-label">Select Style</div>
+      <select class="select" id="photoStyle">
+        <option>Dreamy Romantic</option>
+        <option>Pixar Style Glow</option>
+        <option>Neon Love Remix</option>
+      </select>
+
+      <div class="preview" id="photoPreview">Transform preview appears here.</div>
+
+      <button class="btn-primary" onclick="alert('Photo Transformed!')">Transform Photo</button>
+      <button class="btn-secondary" onclick="alert('Photo Sent!')">Send Photo</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const supabase = window.supabase.createClient(
+  "https://xsrgfbhxhavasrjscaik.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzcmdmYmh4aGF2YXNyanNjYWlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MzQ2NDEsImV4cCI6MjA4NjQxMDY0MX0.qOTtfazgB6deUpgaZPoCvPWYVRMDQ0CWhkYxDXhr88g"
+);
+
+// simple image preview helpers
+function attachImagePreview(inputId, previewId){
+  const input=document.getElementById(inputId);
+  const preview=document.getElementById(previewId);
+  if(!input || !preview) return;
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      preview.innerHTML = `<img src="${reader.result}" alt="preview" />`;
+    };
+    reader.readAsDataURL(file);
+  };
+}
+attachImagePreview("msgUpload","msgPreview");
+attachImagePreview("cardUpload","cardPreview");
+attachImagePreview("photoUpload","photoPreview");
+
+// meme canvas rendering
+function generateMeme(){
+  const fileInput=document.getElementById("memeUpload");
+  const file=fileInput.files[0];
+  if(!file) return alert("Upload a photo first");
+
+  const reader=new FileReader();
+  reader.onload=function(){
+    const img=new Image();
+    img.onload=function(){
+      const canvas=document.getElementById("memeCanvas");
+      const ctx=canvas.getContext("2d");
+      canvas.width=img.width;
+      canvas.height=img.height;
+      ctx.drawImage(img,0,0);
+
+      const top=document.getElementById("topText").value;
+      const bottom=document.getElementById("bottomText").value;
+
+      ctx.font="bold 40px Impact";
+      ctx.strokeStyle="black";
+      ctx.lineWidth=3;
+      ctx.fillStyle="white";
+      ctx.textBaseline="top";
+      ctx.strokeText(top,20,20);
+      ctx.fillText(top,20,20);
+
+      ctx.textBaseline="bottom";
+      ctx.strokeText(bottom,20,canvas.height-20);
+      ctx.fillText(bottom,20,canvas.height-20);
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function sendMsg(){
+  alert("Message Sent!");
+}
+</script>
+</body>
+</html>
