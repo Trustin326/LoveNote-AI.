@@ -1,0 +1,78 @@
+:root{
+  --pink:#ff2f9f;
+  --pink2:#ff6ac1;
+  --lav:#a874ff;
+  --card:#ffffff;
+  --bg:#ffffff;
+  --soft:#fff3fb;
+  --ink:#1a1a1a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: var(--bg);
+  color: var(--ink);
+}
+a{color:inherit}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.2px}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;background:linear-gradient(135deg,var(--soft),#fff);border:1px solid rgba(255,47,159,.25)}
+.btn{appearance:none;border:0;cursor:pointer;border-radius:18px;padding:12px 16px;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.primary{background:linear-gradient(45deg,var(--pink),var(--pink2));color:white;box-shadow:0 10px 25px rgba(255,47,159,.25)}
+.btn.dark{background:#111;color:#fff}
+.btn.ghost{background:rgba(255,47,159,.08);color:var(--pink)}
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:24px;align-items:center;padding:18px 0 10px}
+.hero h1{font-size:44px;line-height:1.05;margin:0 0 10px;font-weight:1000}
+.hero p{margin:0 0 16px;color:#4a4a4a;font-size:16px;max-width:52ch}
+.heroCard{background:linear-gradient(180deg,#fff, var(--soft));border:1px solid rgba(255,47,159,.18);border-radius:28px;padding:18px;box-shadow:0 18px 40px rgba(255,47,159,.12)}
+.heroImg{width:100%;max-width:340px;display:block;margin:0 auto;filter: drop-shadow(0 18px 30px rgba(0,0,0,.15))}
+.grid4{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+@media(max-width:860px){.hero{grid-template-columns:1fr} .grid4{grid-template-columns:1fr} .hero h1{font-size:38px}}
+
+.pinkCard{
+  background:#fff;
+  border-radius:28px;
+  padding:22px 18px 18px;
+  box-shadow: 0 16px 40px rgba(255,47,159,.10);
+  border: 4px solid rgba(255,47,159,.10);
+  position:relative;
+  overflow:hidden;
+}
+.pinkCard::before{
+  content:"";
+  position:absolute;inset:-2px;
+  border-radius:32px;
+  background:linear-gradient(135deg, rgba(255,47,159,.35), rgba(168,116,255,.30), rgba(255,47,159,.20));
+  filter: blur(16px);
+  opacity:.45;
+  z-index:0;
+}
+.pinkCardInner{position:relative;z-index:1}
+.cardTitle{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cardTitle h2{margin:0;color:var(--pink);font-weight:1000;letter-spacing:.2px;font-size:28px}
+.cardBody{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:start;margin-top:12px}
+.cardShot{width:150px;height:auto;border-radius:18px;background:#fff;box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.field{margin:8px 0}
+label{display:block;font-size:12px;color:#7a2a56;margin-bottom:6px;font-weight:800}
+input,select,textarea{
+  width:100%;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,47,159,.20);
+  outline:none;
+  background:rgba(255,255,255,.90);
+  font-size:14px;
+}
+textarea{min-height:84px;resize:vertical}
+.bigBtn{margin-top:10px;width:100%;border-radius:22px;padding:14px 14px;font-size:16px;font-weight:1000;background:linear-gradient(45deg,var(--pink),var(--pink2));color:#fff;border:0;box-shadow:0 14px 30px rgba(255,47,159,.25);cursor:pointer}
+.subActions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+.chip{padding:10px 12px;border-radius:999px;border:1px solid rgba(255,47,159,.22);background:rgba(255,47,159,.06);color:var(--pink);font-weight:900;cursor:pointer;text-decoration:none;display:inline-flex}
+.previewBox{margin-top:10px;border-radius:18px;border:1px dashed rgba(255,47,159,.35);background:rgba(255,47,159,.04);padding:12px}
+.canvasWrap{display:flex;justify-content:center}
+canvas{max-width:100%;border-radius:16px;background:#fff;box-shadow:0 12px 24px rgba(0,0,0,.08)}
+.notice{font-size:12px;color:#6a6a6a;margin-top:10px}
+.footer{padding:30px 0;color:#777;font-size:12px;text-align:center}
+.lock{position:absolute;top:14px;right:14px;background:rgba(0,0,0,.85);color:#fff;border-radius:999px;padding:8px 12px;font-weight:900;font-size:12px;z-index:2;display:none}
+.lock.show{display:inline-flex}

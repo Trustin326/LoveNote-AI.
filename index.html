@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>LoveNote AI — Viral Love Tools</title>
+<link rel="stylesheet" href="./css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body>
+<div class="container">
+  <div class="nav">
+    <div class="brand"><span style="font-size:22px">💘</span> LoveNote AI</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a class="btn ghost" href="./login.html">Log in</a>
+      <a class="btn primary" href="#pricing">Get Access</a>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div>
+      <div class="badge">✨ Viral love tools • 📱 Phone-ready • 🪄 Live previews</div>
+      <h1>Make love messages, memes, cards & photo magic — in minutes.</h1>
+      <p>Create shareable romance content with cute characters, live previews, and one‑tap “send to phone”.</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn primary" href="./login.html">Start Free (Login)</a>
+        <button id="demoPay" class="btn dark">Demo Unlock (simulate payment)</button>
+      </div>
+      <p class="notice">Demo Unlock stores <b>lovenote_paid=true</b> in your browser. Replace with Stripe success redirect later.</p>
+    </div>
+    <div class="heroCard"><img id="heroImg" class="heroImg" alt="Cupid hero"/></div>
+  </section>
+
+  <section style="padding:10px 0 0">
+    <h2 style="margin:14px 0 10px;color:#111;font-size:22px;font-weight:1000">Included Tools</h2>
+    <div class="grid4">
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>*AI Message Generator*</h2><span class="badge">1-tap send</span></div>
+        <div class="cardBody">
+          <img id="shotMsg" class="cardShot" alt="Message tool"/>
+          <div><p style="margin:0 0 8px;color:#555">Romantic, cute, or funny messages — optional image.</p>
+          <a class="btn primary" href="./dashboard.html#msg">Open</a></div>
+        </div>
+      </div></div>
+
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>*Meme Creator*</h2><span class="badge">Upload + export</span></div>
+        <div class="cardBody">
+          <img id="shotMeme" class="cardShot" alt="Meme tool"/>
+          <div><p style="margin:0 0 8px;color:#555">Upload a photo + top/bottom text.</p>
+          <a class="btn primary" href="./dashboard.html#meme">Open</a></div>
+        </div>
+      </div></div>
+
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>*Greeting Card Builder*</h2><span class="badge">Dance upsell</span></div>
+        <div class="cardBody">
+          <img id="shotCard" class="cardShot" alt="Card tool"/>
+          <div><p style="margin:0 0 8px;color:#555">Create a card + open/close + optional dance.</p>
+          <a class="btn primary" href="./dashboard.html#card">Open</a></div>
+        </div>
+      </div></div>
+
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>*Photo Transform*</h2><span class="badge">Filters + export</span></div>
+        <div class="cardBody">
+          <img id="shotPhoto" class="cardShot" alt="Photo tool"/>
+          <div><p style="margin:0 0 8px;color:#555">Upload + apply style filters + export.</p>
+          <a class="btn primary" href="./dashboard.html#photo">Open</a></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <section id="pricing" style="padding:26px 0">
+    <h2 style="margin:0 0 10px;font-size:28px;font-weight:1000;color:#111">Pricing</h2>
+    <div class="grid4">
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>Starter</h2><span class="badge">$9</span></div>
+        <p style="margin:10px 0;color:#555">Messages + Memes.</p>
+        <button class="btn primary" onclick="unlockPaid()">Buy Starter (demo)</button>
+      </div></div>
+      <div class="pinkCard"><div class="pinkCardInner">
+        <div class="cardTitle"><h2>Deluxe</h2><span class="badge">$19</span></div>
+        <p style="margin:10px 0;color:#555">All tools + dancing upsell.</p>
+        <button class="btn dark" onclick="unlockPaid()">Buy Deluxe (demo)</button>
+      </div></div>
+    </div>
+    <p class="notice">Replace demo buttons with Stripe Checkout links and set <b>lovenote_paid</b> on success.</p>
+  </section>
+
+  <div class="footer">© LoveNote AI • GitHub Pages ready • Supabase connected</div>
+</div>
+
+<script type="module">
+  import { IMG, toast } from "./js/common.js";
+  heroImg.src = IMG.cupid;
+  shotMsg.src = IMG.msg;
+  shotMeme.src = IMG.meme;
+  shotCard.src = IMG.card;
+  shotPhoto.src = IMG.photo;
+
+  function unlockPaid(){
+    localStorage.setItem("lovenote_paid","true");
+    toast("Unlocked (demo). Redirecting to dashboard…");
+    setTimeout(()=>location.href="./dashboard.html", 700);
+  }
+  window.unlockPaid = unlockPaid;
+  demoPay.addEventListener("click", unlockPaid);
+</script>
+</body></html>

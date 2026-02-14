@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Login — LoveNote AI</title>
+<link rel="stylesheet" href="./css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head><body>
+<div class="container">
+  <div class="nav">
+    <div class="brand"><a href="./index.html" style="text-decoration:none">💘 LoveNote AI</a></div>
+    <a class="btn ghost" href="./index.html#pricing">Pricing</a>
+  </div>
+
+  <div class="pinkCard" style="max-width:560px;margin:20px auto">
+    <div class="pinkCardInner">
+      <div class="cardTitle"><h2>Log in</h2><span class="badge">Supabase</span></div>
+      <div class="field"><label>Email</label><input id="email" type="email" placeholder="you@example.com"/></div>
+      <div class="field"><label>Password</label><input id="password" type="password" placeholder="••••••••"/></div>
+      <button id="loginBtn" class="bigBtn">Log in</button>
+      <div class="subActions">
+        <button id="signupBtn" class="chip">Create account</button>
+        <button id="magicBtn" class="chip">Send magic link</button>
+      </div>
+      <p class="notice">If you use Magic Link, check your email and return to this tab.</p>
+    </div>
+  </div>
+
+  <div class="footer">Supabase → Auth → URL Configuration: add your GitHub Pages URL to Redirect URLs.</div>
+</div>
+
+<script type="module">
+  import { supabase } from "./js/supabase.js";
+  import { toast } from "./js/common.js";
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+
+  loginBtn.onclick = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email: email.value.trim(), password: password.value });
+    if (error) return toast(error.message);
+    toast("Logged in!");
+    setTimeout(()=>location.href="./dashboard.html", 600);
+  };
+  signupBtn.onclick = async () => {
+    const { error } = await supabase.auth.signUp({ email: email.value.trim(), password: password.value });
+    if (error) return toast(error.message);
+    toast("Account created. Now login.");
+  };
+  magicBtn.onclick = async () => {
+    const redirectTo = window.location.origin + window.location.pathname.replace("login.html","dashboard.html");
+    const { error } = await supabase.auth.signInWithOtp({ email: email.value.trim(), options: { emailRedirectTo: redirectTo }});
+    if (error) return toast(error.message);
+    toast("Magic link sent!");
+  };
+</script>
+</body></html>

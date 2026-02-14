@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dancing Upsell — LoveNote AI</title>
+<link rel="stylesheet" href="./css/style.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+.stage{background:linear-gradient(180deg,#fff,#f7fbff);border-radius:26px;padding:16px;border:1px solid rgba(0,0,0,.06);box-shadow:0 18px 40px rgba(0,0,0,.10);overflow:hidden;position:relative;min-height:360px;}
+.dance{position:absolute;left:50%;top:54%;width:320px;transform:translate(-50%,-50%);transform-origin:center;animation:sway 1.15s ease-in-out infinite;filter:drop-shadow(0 22px 30px rgba(0,0,0,.22));}
+@keyframes sway{0%{transform:translate(-50%,-50%) rotate(-2deg) scale(1.02)}50%{transform:translate(-50%,-50%) rotate(2deg) scale(1.04)}100%{transform:translate(-50%,-50%) rotate(-2deg) scale(1.02)}}
+.pulse{animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+</style>
+</head><body>
+<div class="container">
+  <div class="nav">
+    <div class="brand"><a href="./dashboard.html" style="text-decoration:none">← Dashboard</a></div>
+    <a class="btn ghost" href="./index.html#pricing">Pricing</a>
+  </div>
+
+  <div class="pinkCard" style="max-width:860px;margin:10px auto">
+    <div class="pinkCardInner">
+      <div class="cardTitle"><h2>LoveNote AI Deluxe — Upsell Card</h2><span class="badge">Valentine Mode closes Feb 14</span></div>
+      <p style="margin:10px 0 0;color:#555">Click “Open / Close Card” to reveal the dance. 😭💘</p>
+
+      <div style="margin-top:14px" class="stage" id="stage">
+        <img id="danceImg" class="dance" alt="Dancing characters"/>
+        <div style="position:absolute;left:16px;top:16px" class="badge">Bundle $19 • Funny + Viral</div>
+      </div>
+
+      <div class="subActions" style="margin-top:14px">
+        <button class="btn primary" id="toggleBtn">Open / Close Card</button>
+        <button class="btn dark" id="demoUnlock">Demo Unlock</button>
+        <button class="btn ghost" id="snapBtn">Download Snapshot PNG</button>
+      </div>
+
+      <div class="notice">✅ 3D characters (PNG) + CSS motion • ✅ Snapshot export • Replace Demo Unlock with Stripe later.</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { IMG, toast, downloadDataUrl } from "./js/common.js";
+  danceImg.src = IMG.dancePair;
+  let open=false;
+  toggleBtn.onclick = ()=>{ open=!open; danceImg.classList.toggle("pulse", open); toast(open?"Card opened!":"Card closed!"); };
+  demoUnlock.onclick = ()=>{ localStorage.setItem("lovenote_paid","true"); toast("Unlocked (demo)."); };
+  snapBtn.onclick = async ()=>{ const c=await html2canvas(stage,{backgroundColor:null,scale:2}); downloadDataUrl(c.toDataURL("image/png"),"lovenote-dance-card.png"); };
+</script>
+</body></html>
