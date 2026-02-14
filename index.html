@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>LoveNote AI – Valentine Message & Meme Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --pink-start:#ff2f92;
+      --pink-end:#ff72c4;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      font-family:'Poppins',system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#fff;
+      color:#222;
+    }
+    .wrap {
+      max-width:1080px;
+      margin:0 auto;
+      padding:20px 16px 60px;
+    }
+    header {
+      padding:10px 0 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .logo {
+      font-weight:800;
+      font-size:22px;
+      background:linear-gradient(90deg,var(--pink-start),var(--pink-end));
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+    .hero {
+      display:grid;
+      grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);
+      gap:32px;
+      align-items:center;
+      padding:20px 0 10px;
+    }
+    @media (max-width:800px){
+      .hero { grid-template-columns:1fr; }
+    }
+    .hero-title {
+      font-size:40px;
+      line-height:1.1;
+      margin-bottom:12px;
+    }
+    .hero-sub {
+      font-size:16px;
+      color:#555;
+      margin-bottom:20px;
+    }
+    .hero-badges {
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+    .badge {
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:12px;
+      background:#ffe5f4;
+      color:#c11c7b;
+      font-weight:600;
+    }
+    .cta-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      margin-bottom:10px;
+    }
+    .btn-primary {
+      border:none;
+      border-radius:999px;
+      padding:14px 28px;
+      font-weight:700;
+      font-size:15px;
+      background:linear-gradient(90deg,var(--pink-start),var(--pink-end));
+      color:#fff;
+      cursor:pointer;
+      box-shadow:0 12px 30px rgba(255,0,140,.32);
+    }
+    .btn-ghost {
+      border-radius:999px;
+      padding:10px 18px;
+      border:1px solid #ffd3ea;
+      background:#fff;
+      font-size:14px;
+      color:#c11c7b;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .hero-note {
+      font-size:12px;
+      color:#888;
+    }
+    .hero-card {
+      border-radius:32px;
+      padding:22px 18px 18px;
+      background:linear-gradient(145deg,#ffeef9,#ffffff);
+      box-shadow:0 20px 40px rgba(255,0,150,.2);
+      border:2px solid rgba(255,150,210,.45);
+    }
+    .hero-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+    .mini-card {
+      border-radius:20px;
+      background:#fff;
+      padding:10px 10px 14px;
+      font-size:10px;
+      text-align:center;
+      color:#ff2f92;
+      box-shadow:0 8px 18px rgba(0,0,0,.06);
+    }
+    .mini-card-title {
+      font-weight:700;
+      margin-bottom:4px;
+    }
+
+    .section-title {
+      margin:40px 0 10px;
+      font-size:22px;
+      font-weight:700;
+      text-align:center;
+    }
+    .section-sub {
+      text-align:center;
+      font-size:14px;
+      color:#666;
+      margin-bottom:24px;
+    }
+
+    .features {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:18px;
+    }
+    .feature-card {
+      border-radius:20px;
+      padding:16px 14px 18px;
+      background:#faf5fb;
+      border:1px solid #f7d5ec;
+    }
+    .feature-title {
+      font-size:15px;
+      font-weight:700;
+      margin-bottom:6px;
+      color:#c11c7b;
+    }
+    .feature-text {
+      font-size:13px;
+      color:#555;
+    }
+
+    .pricing-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+      gap:18px;
+      margin-top:20px;
+    }
+    .price-card {
+      border-radius:22px;
+      padding:20px 18px 22px;
+      background:#fff;
+      box-shadow:0 12px 30px rgba(0,0,0,.06);
+      border:1px solid #f3d8eb;
+    }
+    .price-label {
+      font-size:12px;
+      font-weight:600;
+      color:#c11c7b;
+      margin-bottom:6px;
+    }
+    .price-main {
+      font-size:26px;
+      font-weight:800;
+      margin-bottom:4px;
+    }
+    .price-note {
+      font-size:12px;
+      color:#777;
+      margin-bottom:12px;
+    }
+    .price-list {
+      list-style:none;
+      padding:0;
+      margin:0 0 14px;
+      font-size:13px;
+      color:#555;
+    }
+    .price-list li {
+      margin-bottom:4px;
+    }
+    .price-list li::before {
+      content:"✔";
+      color:#c11c7b;
+      margin-right:6px;
+    }
+
+    footer {
+      margin-top:40px;
+      font-size:11px;
+      color:#aaa;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">LoveNote AI</div>
+      <button class="btn-ghost" onclick="location.href='dashboard.html'">Open Dashboard</button>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div>
+        <h1 class="hero-title">Turn any Valentine into a <span style="color:#ff2f92;">save-worthy LoveNote</span> in seconds.</h1>
+        <p class="hero-sub">
+          AI-powered love messages, memes, greeting cards and photo glow-ups in one cute dashboard.
+          Built for last-minute romantics, besties & spicy situationships.
+        </p>
+
+        <div class="hero-badges">
+          <div class="badge">💌 AI Message Generator</div>
+          <div class="badge">😂 Meme Studio</div>
+          <div class="badge">💝 Greeting Card Builder</div>
+          <div class="badge">✨ Photo Transform</div>
+        </div>
+
+        <div class="cta-row">
+          <button class="btn-primary" onclick="location.href='dashboard.html'">Start Creating LoveNotes</button>
+          <button class="btn-ghost" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">
+            View Valentine Pricing
+          </button>
+        </div>
+        <div class="hero-note">No app install • No design skills • Just log in and create</div>
+      </div>
+
+      <div class="hero-card">
+        <div style="font-size:13px;font-weight:700;color:#c11c7b;margin-bottom:10px;">
+          Live in-app tools preview
+        </div>
+        <div class="hero-grid">
+          <div class="mini-card">
+            <div class="mini-card-title">AI Message</div>
+            <div>Type their name → pick mood → auto love note.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-title">Meme Creator</div>
+            <div>Drop a couple photo → add your caption → viral meme.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-title">Greeting Card</div>
+            <div>Instant Valentine e-card in your brand colors.</div>
+          </div>
+          <div class="mini-card">
+            <div class="mini-card-title">Photo Glow-Up</div>
+            <div>Dreamy romantic filters + Pixar-style glow.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section>
+      <h2 class="section-title">What LoveNote AI does for you</h2>
+      <p class="section-sub">Four bite-sized tools inside one cute dashboard, so you can sell or send Valentine magic fast.</p>
+
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-title">💌 AI Message Generator</div>
+          <div class="feature-text">Type their name, pick the vibe (romantic, flirty, soft apology, situationship) and LoveNote AI writes the perfect message you can customize in-app.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">😂 Meme Creator</div>
+          <div class="feature-text">Upload a couple photo or selfie, drop in your top + bottom text and export a scroll-stopping Valentine meme ready for TikTok, IG or stories.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">💝 Greeting Card Builder</div>
+          <div class="feature-text">Build digital Valentine cards for partners, sneaky links, best friends, newly engaged couples, baby mamas, baby daddies & more.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-title">✨ Photo Transform Studio</div>
+          <div class="feature-text">Turn any basic photo into a dreamy romantic edit—perfect for “we soft launched” posts, couples reels, or selling custom card designs.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing">
+      <h2 class="section-title">Valentine pricing that prints cash</h2>
+      <p class="section-sub">Sell access, sell bundles, or just use it to upgrade your own love life. Stripe-ready out of the box.</p>
+
+      <div class="pricing-grid">
+        <div class="price-card">
+          <div class="price-label">Creator Pass</div>
+          <div class="price-main">$7</div>
+          <div class="price-note">Perfect for selling as a low-ticket Valentine app.</div>
+          <ul class="price-list">
+            <li>Access to all 4 tools</li>
+            <li>Unlimited AI messages</li>
+            <li>Downloadable memes & cards</li>
+          </ul>
+          <button class="btn-primary" style="width:100%;">Connect Stripe Button Here</button>
+        </div>
+        <div class="price-card">
+          <div class="price-label">Valentine Bundle</div>
+          <div class="price-main">$19</div>
+          <div class="price-note">Bundle LoveNote + Date Planner or apology pack.</div>
+          <ul class="price-list">
+            <li>LoveNote AI full access</li>
+            <li>Bonus: Date & apology script pack</li>
+            <li>Reseller-ready landing page</li>
+          </ul>
+          <button class="btn-primary" style="width:100%;">Bundle Checkout</button>
+        </div>
+        <div class="price-card">
+          <div class="price-label">Agency / Reseller</div>
+          <div class="price-main">$49+</div>
+          <div class="price-note">Charge couples, coaches or creators for custom LoveNotes.</div>
+          <ul class="price-list">
+            <li>Use in your own offers</li>
+            <li>Sell cards & meme packs</li>
+            <li>Perfect for Valentine pop-up funnels</li>
+          </ul>
+          <button class="btn-primary" style="width:100%;">Agency License</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      LoveNote AI • Built for Valentine micro-offers • Connect your own Stripe & Supabase for payments and logins.
+    </footer>
+  </div>
+</body>
+</html>
